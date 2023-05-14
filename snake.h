@@ -11,9 +11,9 @@ struct snake_position
 
 struct snake
 {
-    char *head;
+    char head;
     struct snake_position h_p;
-    char *body;
+    char body;
     struct snake_position b_p;
     unsigned int body_len;
 };

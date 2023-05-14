@@ -40,8 +40,8 @@ int main(int argc, char const *argv[])
         return 0;
     }
     Map *m = New_map();
-    Snake *s = New_snake();
-    // refresh_map(m);
+    Snake *s = New_snake(m);
+    refresh_map(m);
     return 0;
 }
 

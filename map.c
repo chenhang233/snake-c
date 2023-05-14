@@ -13,7 +13,6 @@ Map *New_map()
 
 void init_map(Map *m)
 {
-    printf("%d %d\n", row_map, col_map);
     // memset(m->map, 0, sizeof(m->map));
     int i, j;
     for (i = 0; i < row_map; i++)
@@ -32,7 +31,6 @@ void init_map(Map *m)
             {
                 m->map[i][j] = ' ';
             };
-            printf("%c", m->map[i][j]);
         }
     }
 }
