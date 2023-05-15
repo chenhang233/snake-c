@@ -3,6 +3,12 @@
 #include <time.h>
 #include <stdio.h>
 
+int static p_m[4][2] = {
+    {-1, 0},
+    {1, 0},
+    {0, -1},
+    {0, 1}};
+
 Snake *New_snake(Map *m)
 {
     Snake *s = (Snake *)malloc(sizeof(Snake));
@@ -41,33 +47,54 @@ void init_snack(Snake *s)
     s->h_p.left = col;
     s->h_p.top = row;
     s->h_p.next = NULL;
+    s->direction = '0';
     generate_snake_body(s);
 }
 
 void generate_snake_body(Snake *s)
 {
-    int p_m[4][2] = {
-        {-1, 0},
-        {1, 0},
-        {0, -1},
-        {0, 1}};
     s->body = '#';
-    s->body_len = 2;
-    int b_len = s->body_len;
+    s->body_len = 1;
+    // int b_len = s->body_len;
     int cur_rand = Random_int_range(0, 3);
-    int s1 = *p_m[cur_rand];
-    printf("%d\n", s1);
-    printf("%d\n", *p_m[Random_int_range(0, 3)]);
-    s->b_p.left += *p_m[cur_rand];
-    s->b_p.top += *(p_m[cur_rand] + 1);
-    b_len = 0;
-    while (b_len)
+
+    s->b_p.left = *(p_m[cur_rand] + 1) + s->h_p.left;
+    s->b_p.top += *p_m[cur_rand] + s->h_p.top;
+    s->b_p.next = NULL;
+}
+
+void move(Snake *s)
+{
+    // 0 top 1 bottom 2 left 3 right
+    switch (s->direction)
     {
-        struct snake_position next;
-        next.left = 2;
-        next.top = 5;
-        s->b_p.next = malloc(sizeof(next));
-        s->b_p.next = &next;
-        b_len--;
+    case '0':
+        move_head(&s->h_p, p_m[0]);
+        break;
+    case '1':
+        move_head(&s->h_p, p_m[1]);
+        break;
+    case '2':
+        move_head(&s->h_p, p_m[2]);
+        break;
+    case '3':
+        move_head(&s->h_p, p_m[3]);
+        break;
+
+    default:
+        perror("move error");
+        exit(1);
+        break;
     }
+}
+
+void move_head(struct snake_position *h_p, int *m[2])
+{
+    printf("m[0]=%d\n", m[0]);
+    printf("m[1]=%d\n", m[1]);
+    // *h_p->left
+}
+
+void move_body()
+{
 }

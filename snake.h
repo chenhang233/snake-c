@@ -13,6 +13,7 @@ struct snake
 {
     char head;
     struct snake_position h_p;
+    char direction;
     char body;
     struct snake_position b_p;
     unsigned int body_len;
@@ -24,3 +25,6 @@ void init_snack(Snake *s);
 Snake *New_snake(Map *m);
 int Random_int_range(int min, int max);
 void generate_snake_body(Snake *s);
+void move(Snake *s);
+void move_head(struct snake_position *h_p, int *m[2]);
+void move_body();
