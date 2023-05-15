@@ -23,3 +23,4 @@ typedef struct snake Snake;
 void init_snack(Snake *s);
 Snake *New_snake(Map *m);
 int Random_int_range(int min, int max);
+void generate_snake_body(Snake *s);
