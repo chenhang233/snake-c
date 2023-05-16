@@ -22,9 +22,9 @@ struct snake
 typedef struct snake Snake;
 
 void init_snack(Snake *s);
-Snake *New_snake(Map *m);
+Snake *New_snake();
 int Random_int_range(int min, int max);
 void generate_snake_body(Snake *s);
-void move(Snake *s);
-void move_head(struct snake_position *h_p, int *m[2]);
-void move_body();
+void snake_move(Snake *s);
+void snake_move_head(struct snake_position *h_p, int m[2]);
+void snake_move_body(struct snake_position *b_p, int m[2]);

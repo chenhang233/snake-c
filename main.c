@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/select.h>
 #include <termios.h>
+#include <pthread.h>
 #include "main.h"
 #include "map.h"
 #include "snake.h"
@@ -32,31 +36,47 @@ int prev_start()
             system("clear");
     }
 }
-
+Map *m;
+Snake *s;
 int main(int argc, char const *argv[])
 {
-    init_keyboard();
     int t = prev_start();
+    int keyboard_sock = -1;
     if (t == 0)
     {
         return 0;
     }
 
-    Map *m = New_map();
-    Snake *s = New_snake(m);
-    refresh_map(m);
-
+    s = New_snake(m);
+    refresh_map();
+    pthread_t newthread;
+    if (pthread_create(&newthread, NULL, keyboard_event, (void *)&keyboard_sock) != 0)
+    {
+        perror("pthread_create");
+    }
     while (1)
     {
-        kbhit();
-        printf("\n%d\n", readch());
+        // sleep(1);
+        // snake_move(s);
     }
-    close_keyboard();
+
     return 0;
 }
 
-void refresh_map(Map *m)
+void refresh_map()
 {
+    system("clear");
+    free(m);
+    m = New_map();
+    m->map[s->h_p.top][s->h_p.left] = s->head;
+    unsigned int len = s->body_len;
+    struct snake_position *cur = &(s->b_p);
+    while (len)
+    {
+        m->map[cur->top][cur->left] = s->body;
+        cur = cur->next;
+        len--;
+    }
     int i, j;
     for (i = 0; i < row_map; i++)
     {
@@ -67,56 +87,59 @@ void refresh_map(Map *m)
     }
 }
 
-static struct termios initial_settings, new_settings;
-static int peek_character = -1;
-
-void init_keyboard()
+void *keyboard_event(void *e)
 {
-    tcgetattr(0, &initial_settings);
-    new_settings = initial_settings;
-    new_settings.c_lflag |= ICANON;
-    new_settings.c_lflag |= ECHO;
-    new_settings.c_lflag |= ISIG;
-    new_settings.c_cc[VMIN] = 1;
-    new_settings.c_cc[VTIME] = 0;
-    tcsetattr(0, TCSANOW, &new_settings);
-}
-
-void close_keyboard()
-{
-    tcsetattr(0, TCSANOW, &initial_settings);
-}
-
-int kbhit()
-{
-    unsigned char ch;
-    int nread;
-
-    if (peek_character != -1)
-        return 1;
-    new_settings.c_cc[VMIN] = 0;
-    tcsetattr(0, TCSANOW, &new_settings);
-    nread = read(0, &ch, 1);
-    new_settings.c_cc[VMIN] = 1;
-    tcsetattr(0, TCSANOW, &new_settings);
-    if (nread == 1)
+    while (1)
     {
-        peek_character = ch;
-        return 1;
+        int n = 1;
+        char c = getch();
+        switch (c)
+        {
+        case 'w':
+            s->direction = '0';
+            snake_move(s);
+            break;
+        case 's':
+            s->direction = '1';
+            snake_move(s);
+            break;
+        case 'a':
+            s->direction = '2';
+            snake_move(s);
+            break;
+        case 'd':
+            s->direction = '3';
+            snake_move(s);
+            break;
+        default:
+            n = 0;
+            break;
+        }
+        if (n)
+        {
+            // printf("top=%d left=%d\n", s->h_p.top, s->h_p.left);
+            refresh_map(m);
+        }
     }
-    return 0;
 }
 
-int readch()
+char getch()
 {
-    char ch;
-
-    if (peek_character != -1)
-    {
-        ch = peek_character;
-        peek_character = -1;
-        return ch;
-    }
-    read(0, &ch, 1);
-    return ch;
+    char buf = 0;
+    struct termios old = {0};
+    if (tcgetattr(0, &old) < 0)
+        perror("tcsetattr()");
+    old.c_lflag &= ~ICANON;
+    old.c_lflag &= ~ECHO;
+    old.c_cc[VMIN] = 1;
+    old.c_cc[VTIME] = 0;
+    if (tcsetattr(0, TCSANOW, &old) < 0)
+        perror("tcsetattr ICANON");
+    if (read(0, &buf, 1) < 0)
+        perror("read()");
+    old.c_lflag |= ICANON;
+    old.c_lflag |= ECHO;
+    if (tcsetattr(0, TCSADRAIN, &old) < 0)
+        perror("tcsetattr ~ICANON");
+    return (buf);
 }

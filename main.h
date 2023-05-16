@@ -4,9 +4,7 @@
 
 void init_pr();
 int prev_start();
-void refresh_map(Map *m);
+void refresh_map();
 
-void init_keyboard(void);
-void close_keyboard(void);
-int kbhit(void);
-int readch(void);
+char getch();
+void *keyboard_event(void *e);

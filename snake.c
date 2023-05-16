@@ -9,19 +9,10 @@ int static p_m[4][2] = {
     {0, -1},
     {0, 1}};
 
-Snake *New_snake(Map *m)
+Snake *New_snake()
 {
     Snake *s = (Snake *)malloc(sizeof(Snake));
     init_snack(s);
-    m->map[s->h_p.top][s->h_p.left] = s->head;
-    unsigned int len = s->body_len;
-    struct snake_position *cur = &(s->b_p);
-    while (len)
-    {
-        m->map[cur->top][cur->left] = s->body;
-        cur = cur->next;
-        len--;
-    }
     return s;
 }
 
@@ -63,38 +54,46 @@ void generate_snake_body(Snake *s)
     s->b_p.next = NULL;
 }
 
-void move(Snake *s)
+void snake_move(Snake *s)
 {
     // 0 top 1 bottom 2 left 3 right
     switch (s->direction)
     {
     case '0':
-        move_head(&s->h_p, p_m[0]);
+        snake_move_head(&s->h_p, p_m[0]);
+        snake_move_body(&s->b_p, p_m[0]);
         break;
     case '1':
-        move_head(&s->h_p, p_m[1]);
+        snake_move_head(&s->h_p, p_m[1]);
+        snake_move_body(&s->b_p, p_m[1]);
         break;
     case '2':
-        move_head(&s->h_p, p_m[2]);
+        snake_move_head(&s->h_p, p_m[2]);
+        snake_move_body(&s->b_p, p_m[2]);
         break;
     case '3':
-        move_head(&s->h_p, p_m[3]);
+        snake_move_head(&s->h_p, p_m[3]);
+        snake_move_body(&s->b_p, p_m[3]);
         break;
 
     default:
-        perror("move error");
-        exit(1);
         break;
     }
 }
 
-void move_head(struct snake_position *h_p, int *m[2])
+void snake_move_head(struct snake_position *h_p, int m[2])
 {
-    printf("m[0]=%d\n", m[0]);
-    printf("m[1]=%d\n", m[1]);
-    // *h_p->left
+    h_p->top += m[0];
+    h_p->left += m[1];
 }
 
-void move_body()
+void snake_move_body(struct snake_position *b_p, int m[2])
 {
+    struct snake_position *cur = b_p;
+    while (cur != NULL)
+    {
+        cur->top += m[0];
+        cur->left += m[1];
+        cur = cur->next;
+    }
 }
