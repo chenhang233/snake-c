@@ -26,5 +26,6 @@ Snake *New_snake();
 int Random_int_range(int min, int max);
 void generate_snake_body(Snake *s);
 void snake_move(Snake *s);
-void snake_move_head(struct snake_position *h_p, int m[2]);
-void snake_move_body(struct snake_position *b_p, int m[2]);
+
+void snake_move_head(Snake *s, int m[2]);
+void snake_move_body(struct snake_position *b_p, int m[2], int h_top, int h_left);

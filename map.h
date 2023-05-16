@@ -2,7 +2,7 @@
 
 #define row_map 25
 #define col_map 55
-#define mapSize row_map *col_map
+#define mapSize row_map *col_map - 55 * 2 - 23
 
 struct map
 {

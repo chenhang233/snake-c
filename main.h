@@ -1,6 +1,12 @@
 #pragma once
 
+#include "snake.h"
 #include "map.h"
+#include "food.h"
+
+Map *m;
+Snake *s;
+Food *f;
 
 void init_pr();
 int prev_start();

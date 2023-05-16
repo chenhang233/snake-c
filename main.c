@@ -6,8 +6,6 @@
 #include <termios.h>
 #include <pthread.h>
 #include "main.h"
-#include "map.h"
-#include "snake.h"
 
 void init_pr()
 {
@@ -36,8 +34,7 @@ int prev_start()
             system("clear");
     }
 }
-Map *m;
-Snake *s;
+
 int main(int argc, char const *argv[])
 {
     int t = prev_start();
@@ -47,7 +44,9 @@ int main(int argc, char const *argv[])
         return 0;
     }
 
-    s = New_snake(m);
+    s = New_snake();
+    f = New_food();
+
     refresh_map();
     pthread_t newthread;
     if (pthread_create(&newthread, NULL, keyboard_event, (void *)&keyboard_sock) != 0)
@@ -56,8 +55,10 @@ int main(int argc, char const *argv[])
     }
     while (1)
     {
-        // sleep(1);
-        // snake_move(s);
+        printf("--prev-/n");
+        sleep(1);
+        printf("---111-/n");
+        snake_move(s);
     }
 
     return 0;
@@ -77,6 +78,11 @@ void refresh_map()
         cur = cur->next;
         len--;
     }
+    if (!f->count)
+    {
+        generate_food_position();
+    }
+    m->map[f->f_p.top][f->f_p.left] = f->icon;
     int i, j;
     for (i = 0; i < row_map; i++)
     {

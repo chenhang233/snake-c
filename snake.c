@@ -1,7 +1,7 @@
-#include "snake.h"
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
+#include "snake.h"
 
 int static p_m[4][2] = {
     {-1, 0},
@@ -60,20 +60,16 @@ void snake_move(Snake *s)
     switch (s->direction)
     {
     case '0':
-        snake_move_head(&s->h_p, p_m[0]);
-        snake_move_body(&s->b_p, p_m[0]);
+        snake_move_head(s, p_m[0]);
         break;
     case '1':
-        snake_move_head(&s->h_p, p_m[1]);
-        snake_move_body(&s->b_p, p_m[1]);
+        snake_move_head(s, p_m[1]);
         break;
     case '2':
-        snake_move_head(&s->h_p, p_m[2]);
-        snake_move_body(&s->b_p, p_m[2]);
+        snake_move_head(s, p_m[2]);
         break;
     case '3':
-        snake_move_head(&s->h_p, p_m[3]);
-        snake_move_body(&s->b_p, p_m[3]);
+        snake_move_head(s, p_m[3]);
         break;
 
     default:
@@ -81,19 +77,26 @@ void snake_move(Snake *s)
     }
 }
 
-void snake_move_head(struct snake_position *h_p, int m[2])
+void snake_move_head(Snake *s, int m[2])
 {
-    h_p->top += m[0];
-    h_p->left += m[1];
+    int top = s->h_p.top;
+    int left = s->h_p.left;
+    s->h_p.top += m[0];
+    s->h_p.left += m[1];
+    snake_move_body(&s->b_p, p_m[3], top, left);
 }
 
-void snake_move_body(struct snake_position *b_p, int m[2])
+void snake_move_body(struct snake_position *b_p, int m[2], int h_top, int h_left)
 {
     struct snake_position *cur = b_p;
     while (cur != NULL)
     {
-        cur->top += m[0];
-        cur->left += m[1];
+        int temp_t = cur->top;
+        int temp_l = cur->left;
+        cur->top = h_top;
+        cur->left = h_left;
+        h_top = temp_t;
+        h_left = temp_l;
         cur = cur->next;
     }
 }
